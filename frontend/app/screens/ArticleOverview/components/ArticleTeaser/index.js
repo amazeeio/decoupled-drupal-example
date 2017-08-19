@@ -12,6 +12,7 @@ export type ArticleTeaserProps = {
     alias: string,
   },
   body: string,
+  fieldMyfield: string,
 };
 /* eslint-enable react/no-unused-prop-types */
 
@@ -19,6 +20,7 @@ const ArticleTeaser = ({
   title,
   url,
   body,
+  fieldMyfield,
 }: ArticleTeaserProps): React.Element<any> =>
   (<div>
     <h2>
@@ -29,6 +31,9 @@ const ArticleTeaser = ({
     <Html>
       {body}
     </Html>
+    <strong>
+      {fieldMyfield}
+    </strong>
   </div>);
 
 ArticleTeaser.fragments = {
@@ -39,6 +44,7 @@ ArticleTeaser.fragments = {
       }
       title
       body
+      fieldMyfield
     }
   `,
 };

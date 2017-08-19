@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.article.body
     - field.field.node.article.field_image
+    - field.field.node.article.field_myfield
     - field.field.node.article.field_tags
     - image.style.thumbnail
     - node.type.article
@@ -42,6 +43,14 @@ content:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
+  field_myfield:
+    weight: 31
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   field_tags:
     type: entity_reference_autocomplete_tags
     weight: 3

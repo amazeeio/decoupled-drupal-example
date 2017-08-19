@@ -63,6 +63,7 @@ services:
     networks:
       - amazeeio-network
       - default
+    command: yarn run dev
     build:
       context: frontend
       dockerfile: Dockerfile

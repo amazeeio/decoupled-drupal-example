@@ -1,0 +1,8 @@
+docker-compose-yaml: docker-compose.yml
+
+tasks:
+  post-deploy:
+    - run:
+        name: drush cr
+        command: cd web && drush -y cr
+        service: cli

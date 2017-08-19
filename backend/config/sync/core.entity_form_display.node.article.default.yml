@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.article.body
+    - field.field.node.article.field_decoupled
     - field.field.node.article.field_image
     - field.field.node.article.field_myfield
     - field.field.node.article.field_tags
@@ -35,6 +36,14 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_decoupled:
+    weight: 32
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   field_image:
     type: image_image
     weight: 4

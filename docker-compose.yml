@@ -58,7 +58,7 @@ services:
       context: backend
       dockerfile: Dockerfile.mariadb
     labels:
-      com.amazeeio.type: mariadb
+      com.amazeeio.type: mariadb-cluster
   frontend:
     networks:
       - amazeeio-network

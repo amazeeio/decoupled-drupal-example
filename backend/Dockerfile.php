@@ -1,5 +1,5 @@
-ARG BUILDER_IMAGE
-FROM ${BUILDER_IMAGE:-builder} as builder
+ARG CLI_IMAGE
+FROM ${CLI_IMAGE:-builder} as builder
 
 FROM amazeeio/centos7-php-drupal:7.0
 

@@ -1,24 +1,15 @@
 version: '2'
 services:
-  builder:
-    build:
-      context: backend
-      dockerfile: Dockerfile.builder
-    image: builder
-    labels:
-      com.amazeeio.type: none
-      com.amazeeio.push: "false"
   cli:
     build:
       context: backend
       dockerfile: Dockerfile.cli
+    image: builder
     labels:
       com.amazeeio.type: cli
     volumes:
       - ./backend/web:/app/web:delegated
       - ./backend/config:/app/config:delegated
-    depends_on:
-      - builder
   nginx:
     networks:
       - amazeeio-network
@@ -33,12 +24,12 @@ services:
       - ./backend/web:/app/web:delegated
       - ./backend/config:/app/config:delegated
     depends_on:
-      - builder
+      - cli
     expose:
       - "8080"
     environment:
       - AMAZEEIO=AMAZEEIO
-      - AMAZEEIO_URL=drupal.docker.amazee.io
+      - AMAZEEIO_URL=decoupleddrupal.docker.amazee.io
       - AMAZEEIO_HTTP_PORT=8080
   php:
     build:
@@ -52,7 +43,7 @@ services:
       - ./backend/config:/app/config:delegated
       - ./frontend/app/shared/queries:/frontend/app/shared/queries:delegated
     depends_on:
-      - builder
+      - cli
   mariadb:
     build:
       context: backend
@@ -77,7 +68,7 @@ services:
       - AMAZEEIO=AMAZEEIO
       - AMAZEEIO_URL=frontend.docker.amazee.io
       - AMAZEEIO_HTTP_PORT=3000
-      - API=http://drupal.docker.amazee.io/graphql
+      - API=http://decoupleddrupal.docker.amazee.io/graphql
     extra_hosts:
       - "drupal.docker.amazee.io:172.19.0.1"
 networks:

@@ -3,7 +3,7 @@ services:
   cli:
     build:
       context: backend
-      dockerfile: Dockerfile.cli
+      dockerfile: Dockerfile.builder
     image: builder
     labels:
       com.amazeeio.type: cli

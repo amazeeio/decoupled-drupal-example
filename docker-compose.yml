@@ -30,6 +30,7 @@ services:
     environment:
       - AMAZEEIO=AMAZEEIO
       - AMAZEEIO_URL=decoupleddrupal.docker.amazee.io
+      - AMAZEEIO_SITE_URL=decoupleddrupal.docker.amazee.io
       - AMAZEEIO_HTTP_PORT=8080
   php:
     build:
@@ -38,6 +39,8 @@ services:
     labels:
       com.amazeeio.type: nginx-php
       com.amazeeio.name: nginx-php
+    environment:
+      - AMAZEEIO_SITE_URL=decoupleddrupal.docker.amazee.io
     volumes:
       - ./backend/web:/app/web:delegated
       - ./backend/config:/app/config:delegated

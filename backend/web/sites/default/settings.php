@@ -71,9 +71,9 @@ if (getenv('AMAZEEIO_VARNISH_HOSTS') && getenv('AMAZEEIO_VARNISH_SECRET')) {
 
 ### Trusted Host Patterns, see https://www.drupal.org/node/2410395 for more information.
 ### If your site runs on multiple domains, you need to add these domains here
-// $settings['trusted_host_patterns'] = array(
-//   '^' . str_replace('.', '\.', getenv('AMAZEEIO_URL')) . '$',
-// );
+$settings['trusted_host_patterns'] = array(
+  '^' . str_replace('.', '\.', getenv('AMAZEEIO_SITE_URL')) . '$',
+);
 
 ### Temp directory
 if (getenv('AMAZEEIO_TMP_PATH')) {

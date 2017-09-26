@@ -8,8 +8,7 @@ COPY . /app/
 
 ENV NODE_ENV production
 
-RUN yarn run build && yarn run storybook:build
-RUN fix-permissions /app
+RUN yarn run build
 
 EXPOSE 3000
 CMD yarn start

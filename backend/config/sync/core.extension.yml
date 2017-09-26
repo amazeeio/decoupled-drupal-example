@@ -16,7 +16,6 @@ module:
   filter: 0
   graphql: 0
   graphql_block: 0
-  graphql_boolean: 0
   graphql_breadcrumbs: 0
   graphql_content: 0
   graphql_content_mutation: 0
@@ -28,7 +27,6 @@ module:
   graphql_link: 0
   graphql_menu: 0
   graphql_mutation: 0
-  graphql_query_map_entity: 0
   graphql_query_map_json: 0
   graphql_views: 0
   graphql_voyager: 0

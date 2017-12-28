@@ -1,6 +1,6 @@
 ARG CLI_IMAGE
 FROM ${CLI_IMAGE:-builder} as builder
 
-FROM amazeeio/centos7-php-drupal:7.0
+FROM amazeeio/php:7.1-fpm
 
 COPY --from=builder /app /app

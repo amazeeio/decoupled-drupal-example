@@ -1,15 +1,43 @@
 version: '2'
 services:
+  frontend:
+    networks:
+      - amazeeio-network
+      - default
+    command: yarn run dev
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    labels:
+      lagoon.type: node
+    volumes:
+      - ./frontend/app:/app/app:delegated
+    expose:
+      - "3000"
+    environment:
+      - AMAZEEIO=AMAZEEIO
+      - AMAZEEIO_URL=frontend.docker.amazee.io
+      - AMAZEEIO_HTTP_PORT=3000
+      - API=http://decoupleddrupal.docker.amazee.io/graphql
+    extra_hosts:
+      - "decoupleddrupal.docker.amazee.io:172.17.0.1"
   cli:
     build:
       context: backend
       dockerfile: Dockerfile.builder
     image: builder
     labels:
-      com.amazeeio.type: cli
+      lagoon.type: cli-persistent
+      lagoon.persistent: /app/web/sites/default/files/
+      lagoon.persistent.name: nginx
     volumes:
       - ./backend/web:/app/web:delegated
       - ./backend/config:/app/config:delegated
+      - ./frontend/app/shared/queries:/frontend/app/shared/queries:delegated
+    volumes_from:
+      - container:amazeeio-ssh-agent
+    environment:
+      - SSH_AUTH_SOCK=/tmp/amazeeio_ssh-agent/socket
   nginx:
     networks:
       - amazeeio-network
@@ -18,29 +46,30 @@ services:
       context: backend
       dockerfile: Dockerfile.nginx
     labels:
-      com.amazeeio.type: nginx-php
-      com.amazeeio.name: nginx-php
+      lagoon.type: nginx-php-persistent
+      lagoon.persistent: /app/web/sites/default/files/
+      lagoon.name: nginx
     volumes:
       - ./backend/web:/app/web:delegated
       - ./backend/config:/app/config:delegated
+      - ./frontend/app/shared/queries:/frontend/app/shared/queries:delegated
     depends_on:
       - cli
-    expose:
-      - "8080"
     environment:
-      - AMAZEEIO=AMAZEEIO
       - AMAZEEIO_URL=decoupleddrupal.docker.amazee.io
-      - AMAZEEIO_SITE_URL=decoupleddrupal.docker.amazee.io
+      - AMAZEEIO=AMAZEEIO
       - AMAZEEIO_HTTP_PORT=8080
   php:
     build:
       context: backend
       dockerfile: Dockerfile.php
     labels:
-      com.amazeeio.type: nginx-php
-      com.amazeeio.name: nginx-php
-    environment:
-      - AMAZEEIO_SITE_URL=decoupleddrupal.docker.amazee.io
+      lagoon.type: nginx-php-persistent
+      lagoon.persistent: /app/web/sites/default/files/
+      lagoon.name: nginx
+## Uncomment the following lines to enable xdebug in php and then restart the php container
+#    environment:
+#       - XDEBUG_ENABLE=true
     volumes:
       - ./backend/web:/app/web:delegated
       - ./backend/config:/app/config:delegated
@@ -52,28 +81,11 @@ services:
       context: backend
       dockerfile: Dockerfile.mariadb
     labels:
-      com.amazeeio.type: mariadb
-  frontend:
-    networks:
-      - amazeeio-network
-      - default
-    command: yarn run dev
-    build:
-      context: frontend
-      dockerfile: Dockerfile
+      lagoon.type: mariadb
+  redis:
+    image: amazeeio/redis
     labels:
-      com.amazeeio.type: node
-    volumes:
-      - ./frontend/app:/app/app:delegated
-    expose:
-      - "3000"
-    environment:
-      - AMAZEEIO=AMAZEEIO
-      - AMAZEEIO_URL=frontend.docker.amazee.io
-      - AMAZEEIO_HTTP_PORT=3000
-      - API=http://decoupleddrupal.docker.amazee.io/graphql
-    extra_hosts:
-      - "decoupleddrupal.docker.amazee.io:172.19.0.1"
+      lagoon.type: redis
 networks:
   amazeeio-network:
     external: true

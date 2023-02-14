@@ -66,8 +66,5 @@
     "lint-staged": "^4.0.2",
     "prettier": "^1.5.3",
     "sync-request": "^4.1.0"
-  },
-  "engines": {
-    "node": "v8"
   }
 }

@@ -1,7 +1,15 @@
 {
-    "name": "fubhy/drupal-decoupled-app",
+    "name": "lagoon-examples/drupal-decoupled-app",
     "description": "A demo project for showcasing decoupled Drupal with React.",
     "type": "project",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "The Lagoon Authors",
+            "homepage": "https://github.com/uselagoon",
+            "email": "uselagoon@amazee.io"
+        }
+    ],
     "repositories": [
         {
             "type": "composer",
@@ -9,25 +17,21 @@
         }
     ],
     "require": {
-        "composer/installers": "^1.2",
-        "cweagans/composer-patches": "^1.6",
-        "drupal-composer/drupal-scaffold": "^2.2",
-        "drupal/config_installer": "1.x-dev",
-        "drupal/console": "~1.0",
-        "drupal/core": "~8.0",
-        "drupal/graphql": "3.x-dev",
-        "drush/drush": "~8.0",
-        "webflo/drupal-finder": "^0.2.1",
-        "webmozart/path-util": "^2.3"
+        "amazeeio/drupal_integrations": "0.3.7",
+        "composer/installers": "2.2.0",
+        "cweagans/composer-patches": "1.7.3",
+        "drupal/core-composer-scaffold": "10.0.3",
+        "drupal/core-project-message": "10.0.3",
+        "drupal/core-recommended": "10.0.3",
+        "drupal/graphql": "^4.4",
+        "drupal/lagoon_logs": "2.1.1",
+        "drupal/purge": "3.4.0",
+        "drupal/typed_data": "^2.0@dev",
+        "drush/drush": "^11.4",
+        "zaporylie/composer-drupal-optimizations": "1.2.0"
     },
     "require-dev": {
-        "behat/mink": "~1.7",
-        "behat/mink-goutte-driver": "~1.2",
-        "jcalderonzumba/gastonjs": "~1.0.2",
-        "jcalderonzumba/mink-phantomjs-driver": "~0.3.1",
-        "mikey179/vfsstream": "~1.2",
-        "phpunit/phpunit": ">=4.8.28 <5",
-        "symfony/css-selector": "~2.8"
+        "drupal/core-dev-pinned": "10.0.3"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -35,36 +39,38 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
-    },
-    "autoload": {
-        "classmap": [
-            "scripts/composer/ScriptHandler.php"
-        ]
-    },
-    "scripts": {
-        "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
-        "pre-install-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "pre-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "post-install-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
-        ],
-        "post-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
-        ]
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "zaporylie/composer-drupal-optimizations": true,
+            "drupal/core-composer-scaffold": true,
+            "drupal/core-project-message": true,
+            "phpstan/extension-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "extra": {
         "installer-paths": {
             "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
             "web/modules/contrib/{$name}": ["type:drupal-module"],
             "web/profiles/contrib/{$name}": ["type:drupal-profile"],
-            "web/libraries/{$name}": ["type:drupal-library"],
             "web/themes/contrib/{$name}": ["type:drupal-theme"],
-            "drush/contrib/{$name}": ["type:drupal-drush"]
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        },
+        "drupal-scaffold": {
+            "allowed-packages": [
+                "amazeeio/drupal_integrations"
+            ],
+            "file-mapping": {
+                "[web-root]/sites/default/all.settings.php": "assets/all.settings.php"
+            },
+            "locations": {
+                "web-root": "web/"
+            }
         }
     }
 }

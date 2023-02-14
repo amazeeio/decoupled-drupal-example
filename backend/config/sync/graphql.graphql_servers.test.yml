@@ -1,0 +1,20 @@
+uuid: e34a74b1-3951-4f40-8e75-ebc125b467b6
+langcode: en
+status: true
+dependencies: {  }
+name: test
+label: test
+endpoint: /graphql
+debug_flag: 0
+schema: composable
+caching: true
+batching: true
+disable_introspection: false
+query_depth: null
+query_complexity: null
+schema_configuration:
+  composable:
+    extensions:
+      composable_extension: composable_extension
+      example_extension: 0
+persisted_queries_settings: {  }

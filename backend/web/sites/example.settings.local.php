@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:ignoreFile
+
 /**
  * @file
  * Local development override configuration feature.
@@ -24,14 +26,14 @@
  * @see http://php.net/assert
  * @see https://www.drupal.org/node/2492225
  *
- * If you are using PHP 7.0 it is strongly recommended that you set
- * zend.assertions=1 in the PHP.ini file (It cannot be changed from .htaccess
- * or runtime) on development machines and to 0 in production.
+ * It is strongly recommended that you set zend.assertions=1 in the PHP.ini file
+ * (It cannot be changed from .htaccess or runtime) on development machines and
+ * to 0 or -1 in production.
  *
  * @see https://wiki.php.net/rfc/expectations
  */
 assert_options(ASSERT_ACTIVE, TRUE);
-\Drupal\Component\Assertion\Handle::register();
+assert_options(ASSERT_EXCEPTION, TRUE);
 
 /**
  * Enable local development services.
@@ -53,7 +55,7 @@ $config['system.performance']['css']['preprocess'] = FALSE;
 $config['system.performance']['js']['preprocess'] = FALSE;
 
 /**
- * Disable the render cache (this includes the page cache).
+ * Disable the render cache.
  *
  * Note: you should test with the render cache enabled, to ensure the correct
  * cacheability metadata is present. However, in the early stages of
@@ -62,7 +64,7 @@ $config['system.performance']['js']['preprocess'] = FALSE;
  * This setting disables the render cache by using the Null cache back-end
  * defined by the development.services.yml file above.
  *
- * Do not use this setting until after the site is installed.
+ * Only use this setting once the site has been installed.
  */
 # $settings['cache']['bins']['render'] = 'cache.backend.null';
 
@@ -73,6 +75,20 @@ $config['system.performance']['js']['preprocess'] = FALSE;
  * database. This makes it easier to develop custom migrations.
  */
 # $settings['cache']['bins']['discovery_migration'] = 'cache.backend.memory';
+
+/**
+ * Disable Internal Page Cache.
+ *
+ * Note: you should test with Internal Page Cache enabled, to ensure the correct
+ * cacheability metadata is present. However, in the early stages of
+ * development, you may want to disable it.
+ *
+ * This setting disables the page cache by using the Null cache back-end
+ * defined by the development.services.yml file above.
+ *
+ * Only use this setting once the site has been installed.
+ */
+# $settings['cache']['bins']['page'] = 'cache.backend.null';
 
 /**
  * Disable Dynamic Page Cache.
@@ -90,7 +106,7 @@ $config['system.performance']['js']['preprocess'] = FALSE;
  * During development it can be useful to install test extensions for debugging
  * purposes.
  */
-$settings['extension_discovery_scan_tests'] = TRUE;
+# $settings['extension_discovery_scan_tests'] = TRUE;
 
 /**
  * Enable access to rebuild.php.
@@ -113,3 +129,27 @@ $settings['rebuild_access'] = TRUE;
  * directory.
  */
 $settings['skip_permissions_hardening'] = TRUE;
+
+/**
+ * Exclude modules from configuration synchronization.
+ *
+ * On config export sync, no config or dependent config of any excluded module
+ * is exported. On config import sync, any config of any installed excluded
+ * module is ignored. In the exported configuration, it will be as if the
+ * excluded module had never been installed. When syncing configuration, if an
+ * excluded module is already installed, it will not be uninstalled by the
+ * configuration synchronization, and dependent configuration will remain
+ * intact. This affects only configuration synchronization; single import and
+ * export of configuration are not affected.
+ *
+ * Drupal does not validate or sanity check the list of excluded modules. For
+ * instance, it is your own responsibility to never exclude required modules,
+ * because it would mean that the exported configuration can not be imported
+ * anymore.
+ *
+ * This is an advanced feature and using it means opting out of some of the
+ * guarantees the configuration synchronization provides. It is not recommended
+ * to use this feature with modules that affect Drupal in a major way such as
+ * the language or field module.
+ */
+# $settings['config_exclude_modules'] = ['devel', 'stage_file_proxy'];

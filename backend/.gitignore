@@ -27,3 +27,6 @@ css/map
 
 # Ignore css files from custom themes
 /web/themes/*/css/*.*
+/.drush-lock-update
+/.editorconfig
+/.gitattributes

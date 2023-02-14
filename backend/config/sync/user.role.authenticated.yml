@@ -1,9 +1,19 @@
-uuid: 333e33e4-db97-4e64-8abb-9e21bbb49783
+uuid: 1b3beb40-7dc2-4c5d-97c1-0c4dae59e890
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.basic_html
+  module:
+    - comment
+    - contact
+    - filter
+    - graphql
+    - search
+    - shortcut
+    - system
 _core:
-  default_config_hash: dJ0L2DNSj5q6XVZAGsuVDpJTh5UeYkIPwKrUOOpr8YI
+  default_config_hash: I44QAB4es39lNzMQWiJLq2dfjX7VRSOzT_5KzAcUq_M
 id: authenticated
 label: 'Authenticated user'
 weight: 1
@@ -13,10 +23,10 @@ permissions:
   - 'access content'
   - 'access shortcuts'
   - 'access site-wide contact form'
-  - 'execute graphql requests'
-  - 'execute persisted graphql requests'
+  - 'execute test arbitrary graphql requests'
+  - 'execute test persisted graphql requests'
   - 'post comments'
   - 'search content'
   - 'skip comment approval'
-  - 'use graphql explorer'
+  - 'use test graphql explorer'
   - 'use text format basic_html'

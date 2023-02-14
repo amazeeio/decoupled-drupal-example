@@ -1,61 +1,53 @@
+_core:
+  default_config_hash: R4IF-ClDHXxblLcG0L7MgsLvfBIMAvi_skumNFQwkDc
 module:
   automated_cron: 0
+  big_pipe: 0
   block: 0
   block_content: 0
   breakpoint: 0
-  ckeditor: 0
-  color: 0
+  ckeditor5: 0
+  comment: 0
   config: 0
+  contact: 0
   contextual: 0
   datetime: 0
   dblog: 0
+  dynamic_page_cache: 0
   editor: 0
   field: 0
   field_ui: 0
   file: 0
   filter: 0
   graphql: 0
-  graphql_block: 0
-  graphql_breadcrumbs: 0
-  graphql_content: 0
-  graphql_content_mutation: 0
-  graphql_core: 0
-  graphql_entity_reference: 0
-  graphql_file: 0
-  graphql_graphiql: 0
-  graphql_image: 0
-  graphql_link: 0
-  graphql_menu: 0
-  graphql_mutation: 0
-  graphql_query_map_entity: 0
-  graphql_query_map_json: 0
-  graphql_views: 0
-  graphql_voyager: 0
+  graphql_composable: 0
+  graphql_examples: 0
   help: 0
   history: 0
   image: 0
   link: 0
+  menu_link_content: 0
   menu_ui: 0
+  mysql: 0
   node: 0
   options: 0
+  page_cache: 0
   path: 0
-  quickedit: 0
+  path_alias: 0
+  search: 0
   shortcut: 0
-  simpletest: 0
   system: 0
   taxonomy: 0
   text: 0
   toolbar: 0
+  tour: 0
+  typed_data: 0
+  update: 0
   user: 0
   views_ui: 0
-  menu_link_content: 1
   views: 10
-  config_installer: 1000
+  standard: 1000
 theme:
-  stable: 0
-  classy: 0
-  bartik: 0
-  seven: 0
-profile: config_installer
-_core:
-  default_config_hash: R4IF-ClDHXxblLcG0L7MgsLvfBIMAvi_skumNFQwkDc
+  olivero: 0
+  claro: 0
+profile: standard

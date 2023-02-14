@@ -1,9 +1,18 @@
-uuid: 4d1daacc-c615-455c-ab18-c1a843721003
+uuid: 04f57dec-0a4d-476b-bf10-6fe53ce26df3
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.restricted_html
+  module:
+    - comment
+    - contact
+    - filter
+    - graphql
+    - search
+    - system
 _core:
-  default_config_hash: j5zLMOdJBqC0bMvSdth5UebkprJB8g_2FXHqhfpJzow
+  default_config_hash: 6WavjUYXIegP9AAg2zXGx54MWIVoomC3SZhNiqe-Dyk
 id: anonymous
 label: 'Anonymous user'
 weight: 0
@@ -12,8 +21,7 @@ permissions:
   - 'access comments'
   - 'access content'
   - 'access site-wide contact form'
-  - 'execute graphql requests'
-  - 'execute persisted graphql requests'
+  - 'execute test arbitrary graphql requests'
+  - 'execute test persisted graphql requests'
   - 'search content'
-  - 'use graphql explorer'
   - 'use text format restricted_html'

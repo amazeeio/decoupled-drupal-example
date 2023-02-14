@@ -2,25 +2,55 @@ version: '2.3'
 
 x-lagoon-project:
   # Lagoon project name (leave `&lagoon-project` when you edit this)
-  &lagoon-project drupal-decoupled-app
+  &lagoon-project ${COMPOSE_PROJECT_NAME:-drupal-decoupled-app}
 
 x-drupal-volumes:
-  &drupal-volumes
-    # Define all volumes you would like to have real-time mounted into the drupal docker containers
+  &default-volumes
+    # Define all volumes you would like to have real-time mounted into the docker containers
     volumes:
-      - ./backend:/app:delegated
+      - ./backend:/app:delegated ### Local overrides to mount host filesystem. Automatically removed in CI and PROD.
+      - ./backend/files:/app/web/sites/default/files
 
 x-environment:
   &default-environment
     LAGOON_PROJECT: *lagoon-project
     # Route that should be used locally
-    LAGOON_ROUTE: http://drupal-decoupled-app.docker.amazee.io
+    LAGOON_ROUTE: &default-url http://${COMPOSE_PROJECT_NAME:-drupal-decoupled-app}.docker.amazee.io
     # Uncomment if you like to have the system behave like in production
     #LAGOON_ENVIRONMENT_TYPE: production
     # Uncomment to enable xdebug and then restart via `docker-compose up -d`
     #XDEBUG_ENABLE: "true"
 
+x-user:
+  &default-user
+    # The default user under which the containers should run. Change this if you are on linux and run with another user than id `1000`
+    user: '1000'
+
+volumes:
+  files:
+    {}
+  db:
+    {}
+
 services:
+
+  cli: # cli container, will be used for executing composer and any local commands (drush, drupal, etc.)
+    build:
+      context: backend
+      dockerfile: lagoon/cli.dockerfile
+    image: &cli-image ${COMPOSE_PROJECT_NAME:-drupal10-base}-cli # this image will be reused as `CLI_IMAGE` in subsequent Docker builds
+    labels:
+      # Lagoon Labels
+      lagoon.type: cli-persistent
+      lagoon.persistent.name: nginx # mount the persistent storage of nginx into this container
+      lagoon.persistent: /app/web/sites/default/files/ # location where the persistent storage should be mounted
+    << : *default-volumes # loads the defined volumes from the top
+    user: root
+    volumes_from: ### mount the ssh-agent from the pygmy or cachalot ssh-agent. Automatically removed in CI.
+      - container:amazeeio-ssh-agent ### Local overrides to mount host SSH keys. Automatically removed in CI.
+    environment:
+      << : *default-environment # loads the defined environment variables from the top
+
   frontend:
     command: yarn run dev # this only applies for local development
     build: # how to build the frontend
@@ -33,45 +63,32 @@ services:
       - ./frontend/app:/app/app:delegated # specifically only mount the /frontend/app folder, so that node_module are still existing from the Docker Build
     environment:
       << : *default-environment # loads the defined environment variables from the top
-      LAGOON_LOCALDEV_URL: drupal-decoupled-app.docker.amazee.io
-      API: http://drupal-varnish.drupal-decoupled-app.docker.amazee.io/graphql
+      LAGOON_LOCALDEV_URL: ${COMPOSE_PROJECT_NAME:-drupal-decoupled-app}.docker.amazee.io
+      API: http://nginx.${COMPOSE_PROJECT_NAME:-drupal-decoupled-app}.docker.amazee.io/graphql
     extra_hosts:
-      - "drupal-varnish.drupal-decoupled-app.docker.amazee.io:172.17.0.1" # Telling the frontend how to communicate with the drupal
+      - "${COMPOSE_PROJECT_NAME:-drupal-decoupled-app}.docker.amazee.io:172.17.0.1" # Telling the frontend how to communicate with the drupal
     networks:
       - amazeeio-network
       - default
 
-  cli: # cli container, will be used for executing composer and any local commands (drush, drupal, etc.)
-    build:
-      context: backend
-      dockerfile: Dockerfile.cli
-    image: *lagoon-project # this image will be reused as `CLI_IMAGE` in subsequent Docker builds
-    labels:
-      # Lagoon Labels
-      lagoon.type: cli-persistent
-      lagoon.persistent.name: nginx # mount the persistent storage of nginx into this container
-      lagoon.persistent: /app/web/sites/default/files/ # location where the persistent storage should be mounted
-    << : *drupal-volumes # loads the defined volumes from the top
-    volumes_from: # mount the ssh-agent from the pygmy or cachalot ssh-agent
-      - container:amazeeio-ssh-agent
-    environment:
-      << : *default-environment # loads the defined environment variables from the top
-
   nginx:
     build:
       context: backend
-      dockerfile: Dockerfile.nginx
+      dockerfile: lagoon/nginx.dockerfile
       args:
-        CLI_IMAGE: *lagoon-project # Inject the name of the cli image
+        CLI_IMAGE: *cli-image # Inject the name of the cli image
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.persistent: /app/web/sites/default/files/ # define where the persistent storage should be mounted too
-    << : *drupal-volumes # loads the defined volumes from the top
+    ports:
+      - "8080" # exposes the port 8080 with a random local port, find it with `docker-compose port nginx 8080`
+    << : *default-volumes # loads the defined volumes from the top
+    << : *default-user # uses the defined user from top
     depends_on:
       - cli # basically just tells docker-compose to build the cli first
     environment:
       << : *default-environment # loads the defined environment variables from the top
-      LAGOON_LOCALDEV_URL: nginx.drupal-decoupled-app.docker.amazee.io # generate another route for nginx
+      LAGOON_LOCALDEV_URL: nginx.${COMPOSE_PROJECT_NAME:-drupal-decoupled-app}.docker.amazee.io # generate another route for nginx
     networks:
       - amazeeio-network
       - default
@@ -79,57 +96,30 @@ services:
   php:
     build:
       context: backend
-      dockerfile: Dockerfile.php
+      dockerfile: lagoon/php.dockerfile
       args:
-        CLI_IMAGE: *lagoon-project
+        CLI_IMAGE: *cli-image # Inject the name of the cli image
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.name: nginx # we want this service be part of the nginx pod in Lagoon
       lagoon.persistent: /app/web/sites/default/files/ # define where the persistent storage should be mounted too
-    << : *drupal-volumes # loads the defined volumes from the top
+    << : *default-volumes # loads the defined volumes from the top
     depends_on:
       - cli # basically just tells docker-compose to build the cli first
     environment:
       << : *default-environment # loads the defined environment variables from the top
 
   mariadb:
-    image: amazeeio/mariadb-drupal
+    image: uselagoon/mariadb-10.6-drupal:latest
     labels:
       lagoon.type: mariadb
     ports:
       - "3306" # exposes the port 3306 with a random local port, find it with `docker-compose port mariadb 3306`
+    << : *default-user # uses the defined user from top
     environment:
       << : *default-environment
-
-  # redis:
-  #   image: amazeeio/redis
-  #   labels:
-  #     lagoon.type: redis
-  #   environment:
-  #     << : *default-environment
-
-  # solr:
-  #   image: amazeeio/solr:6.6-drupal
-  #   labels:
-  #     lagoon.type: solr
-  #   ports:
-  #     - "8983" # exposes the port 8983 with a random local port, find it with `docker-compose port solr 8983`
-  #   environment:
-  #     << : *default-environment
-
-  drupal-varnish:
-    image: amazeeio/varnish-drupal
-    labels:
-      lagoon.type: varnish
-    links:
-      - nginx # links varnish to the nginx in this docker-compose project, or it would try to connect to any nginx running in docker
-    environment:
-      << : *default-environment
-      VARNISH_BYPASS: "true" # by default we bypass varnish, change to 'false' or remove in order to use Varnish
-      LAGOON_LOCALDEV_URL: drupal-varnish.drupal-decoupled-app.docker.amazee.io # generate another route for varnish
-    networks:
-      - amazeeio-network
-      - default
+    volumes:
+      - db:/var/lib/mysql
 
 networks:
   amazeeio-network:

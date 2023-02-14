@@ -1,8 +1,8 @@
-FROM amazeeio/node:8-builder as builder
+FROM amazeeio/node:16-builder as builder
 COPY package.json yarn.lock /app/
 RUN yarn install --pure-lockfile
 
-FROM amazeeio/node:8
+FROM amazeeio/node:16
 COPY --from=builder /app/node_modules /app/node_modules
 COPY . /app/
 
